@@ -46,8 +46,8 @@ int main() {
      */
     
     
-    std::thread t1(SocketDatagrama::enviaBroadcast,const_cast<char*>( ip.c_str()), port, std::ref(datagrama),std::ref(mutex1),&socketDatagrama);
-    std::thread t2(SocketDatagrama::imprimeTabla,const_cast<char*>( ip.c_str()), 7100, std::ref(buffer),std::ref(mutex1),&socketDatagrama);
+    std::thread t1(SocketDatagrama::enviaBroadcast, std::ref(datagrama),std::ref(mutex1),std::ref(socketDatagrama));
+    std::thread t2(SocketDatagrama::imprimeTabla,std::ref(buffer),std::ref(mutex1),std::ref(socketDatagrama));
     t1.join();
     t2.detach();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));

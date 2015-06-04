@@ -94,14 +94,14 @@ int SocketDatagrama::recibeEnteros (PaqueteDatagrama &p) {
     return count;
 }
 
-void SocketDatagrama::enviaBroadcast(char* hostname, int port, PaqueteDatagrama &p, std::mutex &mutex, SocketDatagrama *socketDatagrama)
+void SocketDatagrama::enviaBroadcast(PaqueteDatagrama &p, std::mutex &mutex, SocketDatagrama &socketDatagrama)
 {
     while (1){
         
     
     mutex.lock();
-    socketDatagrama->setBroadcast();
-    socketDatagrama->enviaEnteros(p);
+    socketDatagrama.setBroadcast();
+    socketDatagrama.enviaEnteros(p);
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     std::cout<<"Intentando enviar cosas"<<std::endl;
     mutex.unlock();
@@ -157,15 +157,13 @@ sockaddr_storage * SocketDatagrama::getSourceAddress() {
 
 
 
-void SocketDatagrama::imprimeTabla(char* hostname, int port, PaqueteDatagrama &buffer,std::mutex &mutex, SocketDatagrama *socketDatagrama) {
+void SocketDatagrama::imprimeTabla(PaqueteDatagrama &buffer,std::mutex &mutex, SocketDatagrama &socketDatagrama) {
     ssize_t received_size;
     int * aux;
     while(1)
     {
-        
-        std::cout<<"Intente recibir algo con config: "<<hostname<<" :"<<port<<std::endl;
         mutex.lock();
-        received_size=socketDatagrama->recibeEnteros(buffer);
+        received_size=socketDatagrama.recibeEnteros(buffer);
         aux = buffer.obtieneDatosEnteros();
         printf("\nRecibi: %d\n",aux[0]);
         mutex.unlock();
