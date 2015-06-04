@@ -32,7 +32,7 @@ public:
 
     //Funciones estáticas
     static void enviaBroadcast(PaqueteDatagrama &p,std::mutex &mutex, SocketDatagrama &socketDatagrama);
-    static void imprimeTabla(PaqueteDatagrama &buffer, std::mutex &mutex, SocketDatagrama &socketDatagrama);
+    static void imprimeTabla(PaqueteDatagrama &buffer, std::mutex &mutex, SocketDatagrama *socketDatagrama);
     //Getters
     sockaddr_storage * getSourceAddress();
 
