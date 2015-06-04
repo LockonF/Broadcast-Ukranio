@@ -6,6 +6,7 @@
 #define DATAGRAM_PAQUETEDATAGRAMA_H
 #include <stddef.h>
 #include <string.h>
+#include <string>
 
 class PaqueteDatagrama {
 public:
@@ -20,7 +21,7 @@ public:
     void inicializaPuerto(int);
     void inicializaIp(char *);
     void inicializaDatos(char *);
-    void inicializaEnteros(char *);
+    void inicializaEnteros(std::string);
     int  *obtieneDatosEnteros();
 
 

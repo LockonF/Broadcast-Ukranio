@@ -11,9 +11,11 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <chrono>
+#include <mutex>
 
 
-class SocketDatagrama{ public:
+class SocketDatagrama{
+public:
     SocketDatagrama(char*, int);
     SocketDatagrama();
     ~SocketDatagrama();
@@ -26,11 +28,11 @@ class SocketDatagrama{ public:
     int bindLocalSocket(char *);
     void cambiaDirIp(char *, int);
     int obtieneID();
-    int setBroadCast();
+    int setBroadcast();
 
     //Funciones estáticas
     static void enviaBroadcast(char* hostname, int port, PaqueteDatagrama &p);
-    static void imprimeTabla(char* hostname, int port, PaqueteDatagrama buffer);
+    static void imprimeTabla(char* hostname, int port, PaqueteDatagrama &buffer);
     //Getters
     sockaddr_storage * getSourceAddress();
 

@@ -4,6 +4,8 @@
 
 #include <strings.h>
 #include <stdlib.h>
+#include <iostream>
+
 #include <stdio.h>
 #include <string>
 #include <chrono>
@@ -66,6 +68,7 @@ int SocketDatagrama::bindLocalSocket(char * portname) {
     if (bind(s,res->ai_addr,res->ai_addrlen)==-1) {
        exit(0);
     }
+    return 1;
 }
 
 
@@ -90,14 +93,16 @@ int SocketDatagrama::recibeEnteros (PaqueteDatagrama &p) {
     return count;
 }
 
-void SocketDatagrama::enviaBroadcast(char* hostname, int port, PaqueteDatagrama &p){
-
-    SocketDatagrama socketDatagrama(hostname,port);
-    socketDatagrama.setBroadCast();
+void SocketDatagrama::enviaBroadcast(char* hostname, int port, PaqueteDatagrama &p)
+{
     while(1)
     {
-        socketDatagrama.enviaEnteros(p);
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::cout<<"Intentando enviar cosas";
+    SocketDatagrama socketDatagrama(hostname,port);
+    socketDatagrama.setBroadcast();
+    socketDatagrama.enviaEnteros(p);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+
     }
 }
 
@@ -132,7 +137,7 @@ void SocketDatagrama::cambiaDirIp(char *hostname, int portname) {
 
 }
 
-int SocketDatagrama::setBroadCast() {
+int SocketDatagrama::setBroadcast() {
     int yes=1;
     setsockopt(obtieneID(), SOL_SOCKET,SO_BROADCAST,&yes, sizeof(int));
     return 0;
@@ -147,7 +152,9 @@ sockaddr_storage * SocketDatagrama::getSourceAddress() {
     return &sourceAddress;
 }
 
-void SocketDatagrama::imprimeTabla(char* hostname, int port, PaqueteDatagrama buffer) {
+
+
+void SocketDatagrama::imprimeTabla(char* hostname, int port, PaqueteDatagrama &buffer) {
     SocketDatagrama socketDatagrama(hostname,port);
     while(1) {
         int received_size;

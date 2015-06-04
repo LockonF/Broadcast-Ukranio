@@ -52,12 +52,12 @@ void PaqueteDatagrama::inicializaDatos(char *string) {
     memcpy(datos,string, longitud);
 }
 
-void PaqueteDatagrama::inicializaEnteros(char *string) {
+void PaqueteDatagrama::inicializaEnteros(std::string cadena) {
     datosEnteros[0]=0;
     datosEnteros[1]=0;
-    for(int i=0;i<strlen(string);i++)
+    for(unsigned int i=0;i<cadena.length();i++)
     {
-        this->datosEnteros[i]= string[i]-48;
+        this->datosEnteros[i]= cadena[i]-48;
     }
 }
 
