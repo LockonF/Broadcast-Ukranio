@@ -31,8 +31,8 @@ public:
     int setBroadcast();
 
     //Funciones estáticas
-    static void enviaBroadcast(char* hostname, int port, PaqueteDatagrama &p);
-    static void imprimeTabla(char* hostname, int port, PaqueteDatagrama &buffer);
+    static void enviaBroadcast(char* hostname, int port, PaqueteDatagrama &p,std::mutex &mutex, SocketDatagrama *socketDatagrama);
+    static void imprimeTabla(char* hostname, int port, PaqueteDatagrama &buffer, std::mutex &mutex, SocketDatagrama *socketDatagrama);
     //Getters
     sockaddr_storage * getSourceAddress();
 

@@ -90,20 +90,23 @@ int SocketDatagrama::enviaEnteros(PaqueteDatagrama &p) {
 int SocketDatagrama::recibeEnteros (PaqueteDatagrama &p) {
     socklen_t clilen = sizeof(sourceAddress);
     ssize_t count= recvfrom(s, (char *) p.obtieneDatosEnteros(), 2*sizeof(int), 0, (struct sockaddr *)&sourceAddress,&clilen);
+
     return count;
 }
 
-void SocketDatagrama::enviaBroadcast(char* hostname, int port, PaqueteDatagrama &p)
+void SocketDatagrama::enviaBroadcast(char* hostname, int port, PaqueteDatagrama &p, std::mutex &mutex, SocketDatagrama *socketDatagrama)
 {
-    while(1)
-    {
-    std::cout<<"Intentando enviar cosas";
-    SocketDatagrama socketDatagrama(hostname,port);
-    socketDatagrama.setBroadcast();
-    socketDatagrama.enviaEnteros(p);
+    while (1){
+        
+    
+    mutex.lock();
+    socketDatagrama->setBroadcast();
+    socketDatagrama->enviaEnteros(p);
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
+    std::cout<<"Intentando enviar cosas"<<std::endl;
+    mutex.unlock();
     }
+    
 }
 
 void SocketDatagrama::cambiaDirIp(char *hostname, int portname) {
@@ -154,26 +157,18 @@ sockaddr_storage * SocketDatagrama::getSourceAddress() {
 
 
 
-void SocketDatagrama::imprimeTabla(char* hostname, int port, PaqueteDatagrama &buffer) {
-    SocketDatagrama socketDatagrama(hostname,port);
-    while(1) {
-        int received_size;
-        int *aux;
-        struct sockaddr_in *structRemitente;
-        unsigned char addr_from[4];
-        received_size = socketDatagrama.recibeEnteros(buffer);
-        if (received_size > 0) {
-            aux = buffer.obtieneDatosEnteros();
-            printf("\nRecibi: %d\n", aux[0]);
-            printf("De la ip: ");
-            structRemitente = (struct sockaddr_in *) socketDatagrama.getSourceAddress();
-            memcpy(addr_from, &structRemitente->sin_addr.s_addr, sizeof(&structRemitente->sin_addr.s_addr));
-            //(struct sockaddr *)&sourceAddress
-            bzero(socketDatagrama.getSourceAddress(), sizeof(struct sockaddr_storage));
-            for (int i = 0; i < 4; i++) {
-                printf("%d.", addr_from[i]);
-            }
-            received_size = 0;
-        }
+void SocketDatagrama::imprimeTabla(char* hostname, int port, PaqueteDatagrama &buffer,std::mutex &mutex, SocketDatagrama *socketDatagrama) {
+    ssize_t received_size;
+    int * aux;
+    while(1)
+    {
+        
+        std::cout<<"Intente recibir algo con config: "<<hostname<<" :"<<port<<std::endl;
+        mutex.lock();
+        received_size=socketDatagrama->recibeEnteros(buffer);
+        aux = buffer.obtieneDatosEnteros();
+        printf("\nRecibi: %d\n",aux[0]);
+        mutex.unlock();
     }
+
 }
