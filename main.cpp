@@ -17,6 +17,7 @@ int main() {
     string data;
     string ip;
     int port = 0;
+    list<string> IPS;
 
     cout<<"Introduce la IP"<<endl;
     cin>>ip;
@@ -43,7 +44,7 @@ int main() {
     
     
     std::thread t1(SocketDatagrama::enviaBroadcast, std::ref(datagrama),std::ref(mutex1),std::ref(socketDatagrama));
-    std::thread t2(SocketDatagrama::imprimeTabla,std::ref(buffer),std::ref(mutex1),&(socketDatagrama));
+    std::thread t2(SocketDatagrama::imprimeTabla,std::ref(buffer),std::ref(mutex1),&(socketDatagrama), std::ref(IPS));
     t1.join();
     t2.detach();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));

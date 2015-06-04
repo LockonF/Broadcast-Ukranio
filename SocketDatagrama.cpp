@@ -5,7 +5,7 @@
 #include <strings.h>
 #include <stdlib.h>
 #include <iostream>
-
+#include <sys/time.h>
 #include <stdio.h>
 #include <string>
 #include <chrono>
@@ -99,15 +99,16 @@ void SocketDatagrama::enviaBroadcast(PaqueteDatagrama &p, std::mutex &mutex, Soc
     while (1){
         
     if(mutex.try_lock()){
-        
+        //std::cout << "bloqueando enviador " << std::endl;
         socketDatagrama.setBroadcast();
         socketDatagrama.enviaEnteros(p);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         std::cout<<"Intentando enviar cosas"<<std::endl;
+        //std::this_thread::sleep_for(std::chrono::milliseconds(5000));
         mutex.unlock();
-        
+        //std::cout << "desbloqueando enviador " << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));        
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     //mutex.lock();
     
     }
@@ -162,18 +163,45 @@ sockaddr_storage * SocketDatagrama::getSourceAddress() {
 
 
 
-void SocketDatagrama::imprimeTabla(PaqueteDatagrama &buffer,std::mutex &mutex, SocketDatagrama *socketDatagrama) {
+void SocketDatagrama::imprimeTabla(PaqueteDatagrama &buffer,std::mutex &mutex, SocketDatagrama *socketDatagrama, std::list<std::string> &IPS) {
     ssize_t received_size;
     int * aux;
+    struct sockaddr_in *structRemitente;
+    unsigned char addr_from[4]; //Almacena ip del remitente de un mensaje
+    int auxint[4];
+    std::string auxip;
+    struct timeval timeout;
+    timeout.tv_sec=0;
+    timeout.tv_usec=10000;
+    setsockopt(socketDatagrama->obtieneID(),SOL_SOCKET,SO_RCVTIMEO,(char*)&timeout,sizeof(struct timeval));
     while(1)
     {
         //mutex.lock();
         if(mutex.try_lock()){
+            //std::cout << "bloqueando receptor " << std::endl;
             received_size=socketDatagrama->recibeEnteros(buffer);
             aux = buffer.obtieneDatosEnteros();
-            printf("\nRecibi: %d\n",aux[0]);    
-            mutex.unlock();
             
+            structRemitente = (struct sockaddr_in *)&socketDatagrama->sourceAddress;
+            memcpy(addr_from, &structRemitente->sin_addr.s_addr, sizeof(&structRemitente->sin_addr.s_addr));
+            //(struct sockaddr *)&sourceAddress
+            bzero(&socketDatagrama->sourceAddress, sizeof(struct sockaddr_storage));
+            for(int i = 0; i < 4 ; i++){
+                //printf("%d.", addr_from[i]);
+                auxint[i] = addr_from[i];
+                auxip.append((std::to_string(auxint[i])));
+            } 
+            if(auxip != "0000"){
+                IPS.push_back(auxip);
+                printf("\nRecibi: %d\n",aux[0]);
+            printf("De la ip: ");
+            std::cout << auxip << std::endl;
+            
+            }
+            auxip.clear();
+            //std::cout << "Jaja :) " << std::endl;
+            mutex.unlock();
+            //std::cout << "Desbloqueando receptor " << std::endl;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(200));        
         

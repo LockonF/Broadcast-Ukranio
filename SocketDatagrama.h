@@ -1,7 +1,3 @@
-//
-// Created by Daniel Franco on 5/18/15.
-//
-
 #ifndef DATAGRAM_SOCKETDATAGRAMA_H
 #define DATAGRAM_SOCKETDATAGRAMA_H
 #include "PaqueteDatagrama.h"
@@ -12,6 +8,7 @@
 #include <unistd.h>
 #include <chrono>
 #include <mutex>
+#include <list>
 
 
 class SocketDatagrama{
@@ -32,7 +29,7 @@ public:
 
     //Funciones estáticas
     static void enviaBroadcast(PaqueteDatagrama &p,std::mutex &mutex, SocketDatagrama &socketDatagrama);
-    static void imprimeTabla(PaqueteDatagrama &buffer, std::mutex &mutex, SocketDatagrama *socketDatagrama);
+    static void imprimeTabla(PaqueteDatagrama &buffer, std::mutex &mutex, SocketDatagrama *socketDatagrama, std::list<std::string> &IPS);
     //Getters
     sockaddr_storage * getSourceAddress();
 
